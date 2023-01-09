@@ -210,6 +210,7 @@ class StreamsStateStoreTest {
         @Override
         public void init(final FixedKeyProcessorContext<String, Long> context) {
             this.context = context;
+            // getStateStore returns null
             this.sums = context.getStateStore(SUMS);
         }
 
@@ -218,7 +219,7 @@ class StreamsStateStoreTest {
             // throws error because this.sums is null
             final long oldSum = Optional.ofNullable(this.sums.get(record.key()))
                     .orElse(0L);
-            final long newSum = oldSum + 1;
+            final long newSum = oldSum + record.value();
             this.sums.put(record.key(), newSum);
             this.context.forward(record.withValue(newSum));
         }
