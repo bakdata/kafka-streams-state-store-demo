@@ -1,0 +1,7 @@
+.*
+!.gitignore
+!.gitmodules
+!.gitlab-ci.yml
+build/
+out/
+bin/
