@@ -127,16 +127,26 @@ class StreamsStateStoreTest {
 
             try (final Producer<String, Integer> producer = this.createProducer()) {
                 producer.send(new ProducerRecord<>(INPUT, "foo", 2));
+                producer.send(new ProducerRecord<>(INPUT, "foo", 3));
+                producer.send(new ProducerRecord<>(INPUT, "bar", 1));
                 producer.flush();
             }
 
             try (final Consumer<String, Long> consumer = this.createConsumer()) {
                 final ConsumerRecords<String, Long> records = consumer.poll(Duration.ofSeconds(10));
                 assertThat(Lists.newArrayList(records))
-                        .hasSize(1)
+                        .hasSize(3)
                         .anySatisfy(record -> {
                             assertThat(record.key()).isEqualTo("foo");
                             assertThat(record.value()).isEqualTo(2);
+                        })
+                        .anySatisfy(record -> {
+                            assertThat(record.key()).isEqualTo("foo");
+                            assertThat(record.value()).isEqualTo(5);
+                        })
+                        .anySatisfy(record -> {
+                            assertThat(record.key()).isEqualTo("bar");
+                            assertThat(record.value()).isEqualTo(1);
                         });
             }
         }
